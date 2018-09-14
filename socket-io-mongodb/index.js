@@ -7,10 +7,15 @@ const server = app.listen(PORT, function() {
     console.log(`Running on port ${PORT}`);
 });
 const io = socket(server);
+const MONGO_USER = process.env.MONGO_USER;
+const MONGO_PASS = process.env.MONGO_PASS;
+const MONGO_URI=""
+
+console.log(MONGO_USER, MONGO_PASS);
 
 app.use(express.static("public"));
 
-mongo.connect('mongodb://localhost/mongochat', {
+mongo.connect(`mongodb://${MONGO_USER}:${MONGO_PASS}@ds245687.mlab.com:45687/chatroom-db`, {
   useNewUrlParser: true
 }, (err, client) => {
   if (err) throw err;
