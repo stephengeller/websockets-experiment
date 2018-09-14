@@ -1,7 +1,6 @@
 const express = require("express");
 const socket = require("socket.io");
-
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 const app = express();
 const server = app.listen(PORT, function() {
@@ -12,8 +11,12 @@ app.use(express.static("public"));
 
 const io = socket(server);
 
+const connections = [];
+const users = [];
+
 io.on("connection", socket => {
-  console.log("made socket connection");
+  connections.push(socket);
+  console.log(`Connections: ${connections.length} number of connections`);
 
   socket.on("chat", data => {
     io.sockets.emit("chat", data);
@@ -22,4 +25,7 @@ io.on("connection", socket => {
   socket.on("typing", data => {
     socket.broadcast.emit("typing", data);
   });
+
+  connections.splice(connections.indexOf(socket), 1)
+    console.log(`Disconnected: ${connections.length} number of connections`)
 });

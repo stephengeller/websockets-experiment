@@ -1,4 +1,4 @@
-const socket = io.connect("http://localhost:4000");
+const socket = io.connect();
 
 const message = document.getElementById("message");
 const handle = document.getElementById("handle");
@@ -27,6 +27,6 @@ socket.on("chat", data => {
 });
 
 socket.on("typing", data => {
-    console.log('someone is typing')
+    console.log('someone is typing');
     feedback.innerHTML = `<p><em>${data.handle} is typing...</em></p>`;
 });
