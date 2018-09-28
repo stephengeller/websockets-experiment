@@ -18,6 +18,7 @@ mongo.connect('mongodb://localhost/mongochat', {
   console.log('Mongodb connected...');
 
   io.on("connection", socket => {
+    console.log('someone connected')
     const db = client.db('chatroom-db');
     const chat = db.collection('chats');
 
@@ -50,8 +51,11 @@ mongo.connect('mongodb://localhost/mongochat', {
 
     socket.on('clear', () => {
         chat.removeMany({}, () => {
-            socket.emit('cleared')
+				socket.emit('cleared')
         })
+    })
+    socket.on('disconnect', () => {
+        console.log('someone disconnected')
     })
   });
 });
