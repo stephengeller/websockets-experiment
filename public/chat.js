@@ -7,6 +7,7 @@ const messages = element('messages');
 const textarea = element('textarea');
 const username = element('username');
 const clearBtn = element('clear');
+const currentUsers = element('current-users');
 
 const statusDefault = status.textContent;
 
@@ -20,17 +21,17 @@ const setStatus = (s) => {
 
 const socket = io.connect();
 
-if (socket !== undefined) {
+if (socket) {
     console.log('connected to socket...');
 
     socket.on('output', function(data) {
-        console.log(data);
         if (data.length) {
-            for(let x = 0;x < data.length;x++){
-                // Build out message div
+            for (let x = 0; x < data.length; x++) {
+                // build out message div
                 const message = document.createElement('div');
                 message.setAttribute('class', 'chat-message');
-                message.innerHTML = `<strong>${data[x].name}</strong>: ${data[x].message}`;
+                message.innerHTML = `<strong>${data[x].name}</strong>:
+                ${data[x].message}`;
                 messages.appendChild(message);
                 messages.insertBefore(message, messages.firstChild);
             }
@@ -47,7 +48,7 @@ if (socket !== undefined) {
 
     textarea.addEventListener('keydown', (e) => {
         // event 13 is enter and not holding enter
-        if(e.which === 13 && e.shiftKey === false) {
+        if (e.which === 13 && e.shiftKey === false) {
             socket.emit('input', {
                 name: username.value,
                 message: textarea.value
@@ -57,11 +58,15 @@ if (socket !== undefined) {
         }
     })
 
-    clearBtn.addEventListener('click', function(){
+    clearBtn.addEventListener('click', function() {
         socket.emit('clear');
     });
-    // Clear Message
-    socket.on('cleared', function(){
+    // clear message
+    socket.on('cleared', function() {
         messages.textContent = '';
+    });
+
+    socket.on('currentUsers', function(users) {
+      currentUsers.textContent = users;
     });
 }

@@ -7,6 +7,7 @@ const server = app.listen(PORT, function() {
     console.log(`Running on port ${PORT}`);
 });
 const io = socket(server);
+let users = 0
 
 app.use(express.static("public"));
 
@@ -17,8 +18,12 @@ mongo.connect('mongodb://localhost/mongochat', {
 
   console.log('Mongodb connected...');
 
+
   io.on("connection", socket => {
-    console.log('someone connected')
+    users += 1
+    io.emit('currentUsers', users)
+    console.log(`Connect, ${users} users online`)
+
     const db = client.db('chatroom-db');
     const chat = db.collection('chats');
 
@@ -55,7 +60,9 @@ mongo.connect('mongodb://localhost/mongochat', {
         })
     })
     socket.on('disconnect', () => {
-        console.log('someone disconnected')
+        users -= 1
+        io.emit('currentUsers', users)
+        console.log(`Disconnect, ${users} users online`)
     })
   });
 });
