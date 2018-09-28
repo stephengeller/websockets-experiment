@@ -82,8 +82,6 @@ mongo.connect(`mongodb://${MONGO_USER}:${MONGO_PASS}@${DB_NAME}`, {
     socket.on('typing', function (data) {
         if (data) {
             console.log(`${data.username} is typing...`);
-        } else {
-            console.log(`${data.username} is no longer typing.`)
         }
         socket.broadcast.emit('typing', data);
     });
