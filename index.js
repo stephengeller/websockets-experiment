@@ -3,8 +3,10 @@ const socket = require("socket.io");
 const mongo = require('mongodb').MongoClient;
 require('dotenv').config();
 const PORT = process.env.PORT || 4000;
+const MONGO_TABLE = process.env.MONGO_TABLE || "development";
 const MONGO_USER = process.env.MONGO_USER;
 const MONGO_PASS = process.env.MONGO_PASS;
+const DB_NAME = process.env.DB_NAME;
 const app = express();
 const server = app.listen(PORT, function() {
     console.log(`Running on port ${PORT}`);
@@ -14,7 +16,7 @@ let users = 0
 
 app.use(express.static("public"));
 
-mongo.connect(`mongodb://${MONGO_USER}:${MONGO_PASS}@ds245687.mlab.com:45687/chatroom-db`, {
+mongo.connect(`mongodb://${MONGO_USER}:${MONGO_PASS}@${DB_NAME}`, {
   useNewUrlParser: true
 }, (err, client) => {
   if (err) throw err;
@@ -28,7 +30,7 @@ mongo.connect(`mongodb://${MONGO_USER}:${MONGO_PASS}@ds245687.mlab.com:45687/cha
     console.log(`Connect, ${users} users online`);
 
     const db = client.db('chatroom-db');
-    const chat = db.collection('chats');
+    const chat = db.collection(MONGO_TABLE);
 
     const sendStatus = (s) => {
       socket.emit('status', s)
