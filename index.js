@@ -1,9 +1,10 @@
 const express = require("express");
 const socket = require("socket.io");
 const mongo = require('mongodb').MongoClient;
+require('dotenv').config();
 const PORT = process.env.PORT || 4000;
-const MONGO_USER = process.env.MONGO_USER
-const MONGO_PASS = process.env.MONGO_PASS
+const MONGO_USER = process.env.MONGO_USER;
+const MONGO_PASS = process.env.MONGO_PASS;
 const app = express();
 const server = app.listen(PORT, function() {
     console.log(`Running on port ${PORT}`);
@@ -23,8 +24,8 @@ mongo.connect(`mongodb://${MONGO_USER}:${MONGO_PASS}@ds245687.mlab.com:45687/cha
 
   io.on("connection", socket => {
     users += 1
-    io.emit('currentUsers', users)
-    console.log(`Connect, ${users} users online`)
+    io.emit('currentUsers', users);
+    console.log(`Connect, ${users} users online`);
 
     const db = client.db('chatroom-db');
     const chat = db.collection('chats');
