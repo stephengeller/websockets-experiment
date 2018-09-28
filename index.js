@@ -12,7 +12,8 @@ const server = app.listen(PORT, function() {
     console.log(`Running on port ${PORT}`);
 });
 const io = socket(server);
-let users = 0
+let users = 0;
+let usernames = [];
 
 app.use(express.static("public"));
 
@@ -25,9 +26,10 @@ mongo.connect(`mongodb://${MONGO_USER}:${MONGO_PASS}@${DB_NAME}`, {
 
 
   io.on("connection", socket => {
-    users += 1
+    users += 1;
     io.emit('currentUsers', users);
-    console.log(`Connect, ${users} users online`);
+    io.emit('updateUsers', usernames);
+      console.log(`Connect, ${users} users online`);
 
     const db = client.db('chatroom-db');
     const chat = db.collection(MONGO_TABLE);
@@ -57,17 +59,46 @@ mongo.connect(`mongodb://${MONGO_USER}:${MONGO_PASS}@${DB_NAME}`, {
                 })
             })
         }
-    })
+    });
 
     socket.on('clear', () => {
         chat.removeMany({}, () => {
-				socket.emit('cleared')
+            socket.emit('cleared')
         })
-    })
-    socket.on('disconnect', () => {
-        users -= 1
-        io.emit('currentUsers', users)
-        console.log(`Disconnect, ${users} users online`)
-    })
+    });
+
+    socket.on('updateUser', userObject => {
+         const index = usernames.indexOf(userObject.old);
+         if (index === -1) {
+             console.log(`adding ${userObject.new} to usernames`);
+             usernames.push(userObject.new)
+         } else {
+             console.log(`changing user ${userObject.old} to ${userObject.new}`);
+             usernames[index] = userObject.new
+         }
+         io.emit('updateUsers', usernames)
+    });
+
+    socket.on('typing', function (data) {
+        if (data) {
+            console.log(`${data.username} is typing...`);
+        } else {
+            console.log(`${data.username} is no longer typing.`)
+        }
+        socket.broadcast.emit('typing', data);
+    });
+
+    socket.on('disconnect', d => {
+        console.log(d);
+        users -= 1;
+        io.emit('currentUsers', users);
+        console.log(`Disconnect, ${users} users online`);
+        // const index = usernames.indexOf(userObject.old);
+        // if (index > -1) {
+        //     console.log(`removing ${userObject.new} from usernames`);
+        //     usernames.splice(index, 1);
+        //     io.emit('updateUsers', usernames)
+        // }
+    });
   });
 });

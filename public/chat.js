@@ -6,10 +6,14 @@ const status = element('status');
 const messages = element('messages');
 const textarea = element('textarea');
 const username = element('username');
+const users = element('users');
 const clearBtn = element('clear');
 const currentUsers = element('current-users');
+const typingNotice = element('typing-notice');
 
 const statusDefault = status.textContent;
+let userObject = {};
+let timeout, typing, currentUser;
 
 const setStatus = (s) => {
     status.textContent = s;
@@ -22,12 +26,11 @@ const setStatus = (s) => {
 const socket = io.connect();
 
 if (socket) {
-    console.log('connected to socket...');
+    console.log('connected to socket.');
 
     socket.on('output', function(data) {
         if (data.length) {
             for (let x = 0; x < data.length; x++) {
-                // build out message div
                 const message = document.createElement('div');
                 message.setAttribute('class', 'chat-message');
                 message.innerHTML = `<strong>${data[x].name}</strong>:
@@ -36,7 +39,7 @@ if (socket) {
                 messages.insertBefore(message, messages.firstChild);
             }
         }
-    })
+    });
 
     socket.on('status', (data) => {
         setStatus(typeof data === 'object' ? data.message : data);
@@ -58,15 +61,50 @@ if (socket) {
         }
     })
 
-    clearBtn.addEventListener('click', function() {
+    clearBtn.addEventListener('click', () => {
         socket.emit('clear');
     });
     // clear message
-    socket.on('cleared', function() {
+    socket.on('cleared', () => {
         messages.textContent = '';
     });
 
-    socket.on('currentUsers', function(users) {
+    socket.on('currentUsers', users => {
       currentUsers.textContent = users;
+    });
+
+    const timeoutFunction = () => {
+        typing = false;
+        socket.emit("typing", false);
+    };
+
+    textarea.addEventListener('keydown', () => {
+        typing = true;
+        socket.emit('typing', {
+            username: username.value
+        });
+        clearTimeout(timeout);
+        timeout = setTimeout(timeoutFunction, 2000);
+    });
+
+    username.addEventListener('blur', () => {
+        userObject = {
+            old: currentUser,
+            new: username.value
+        };
+        socket.emit('updateUser', userObject);
+        currentUser = userObject.new
+    });
+
+    socket.on('typing', data => {
+        if (data) {
+            typingNotice.textContent = `${data.username} is typing...`;
+        } else {
+            typingNotice.textContent = '';
+        }
+    });
+
+    socket.on('updateUsers', data => {
+        users.textContent = data.join(", ");
     });
 }
