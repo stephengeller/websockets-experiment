@@ -19,7 +19,7 @@ MONGO_USER=<MLAB DB USER>
 MONGO_PASS=<MLAB DB PASS>
 DB_NAME=<YOUR_URI>.mlab.com:<SOME_NUMBERS>/<DB_NAME> # find this in mLab,
 ```
-These variables will be interpolated in `index.js` to setup your connection to mLab's Mongo DB. Alternatively, edit the file to point to a local mongo db if desired.
+These variables will be interpolated in `app.js` to setup your connection to mLab's Mongo DB. Alternatively, edit the file to point to a local mongo db if desired.
 
 # How to use
 TBC
