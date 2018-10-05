@@ -41,12 +41,17 @@ if (socket) {
                     + currentDate.getMinutes() + ":"
                     + currentDate.getSeconds();
                 messageDiv.innerHTML = `
-                    <div class="css-tooltip">
-                        <div class="css-tooltiptext">${datetime}</div>
                         <span id='message-name'>
                             <strong>${name}</strong>
-                        </span>: ${message}
-                    </div>`;
+                        </span>: 
+                        <div class="css-tooltip">
+                        <span>
+                            <div class="css-tooltiptext">
+                                ${datetime}
+                            </div>${message}
+                        </span>
+                        </div>
+                    `;
                 messages.appendChild(messageDiv);
                 messages.insertBefore(messageDiv, messages.firstChild);
                 if (name === username.value) {
