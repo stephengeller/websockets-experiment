@@ -4,9 +4,7 @@ const mongo = require('mongodb').MongoClient;
 require('dotenv').config();
 const PORT = process.env.PORT || 4000;
 const MONGO_TABLE = process.env.MONGO_TABLE || "development";
-const MONGO_USER = process.env.MONGO_USER;
-const MONGO_PASS = process.env.MONGO_PASS;
-const DB_NAME = process.env.DB_NAME;
+const { MONGO_USER, MONGO_PASS, DB_NAME } = process.env;
 const app = express();
 const server = app.listen(PORT, function() {
     console.log(`Running on port ${PORT}`);
