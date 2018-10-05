@@ -42,8 +42,8 @@ if (socket) {
                     + currentDate.getSeconds();
                 messageDiv.innerHTML = `
                         <span id='message-name'>
-                            <strong>${name}</strong>
-                        </span>: 
+                            <strong>${name}</strong>:
+                        </span>
                         <div class="css-tooltip">
                         <span>
                             <div class="css-tooltiptext">
