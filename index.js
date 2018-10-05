@@ -67,14 +67,19 @@ mongo.connect(`mongodb://${MONGO_USER}:${MONGO_PASS}@${DB_NAME}`, {
     });
 
     socket.on('updateUser', userObject => {
-         const index = usernames.indexOf(userObject.old);
-         if (index === -1) {
+        const index = usernames.indexOf(userObject.old);
+        const indexNew = usernames.indexOf(userObject.new);
+         console.log(usernames, index, 'before', userObject.old, userObject.new, indexNew);
+        if (indexNew > -1 ) {
+            console.log('same user!')
+        } else if (index === -1) {
              console.log(`adding ${userObject.new} to usernames`);
              usernames.push(userObject.new)
          } else {
              console.log(`changing user ${userObject.old} to ${userObject.new}`);
              usernames[index] = userObject.new
          }
+         console.log(usernames, 'after');
          io.emit('updateUsers', usernames)
     });
 
