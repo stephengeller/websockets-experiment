@@ -44,13 +44,12 @@ mongo.connect(`mongodb://${MONGO_USER}:${MONGO_PASS}@${DB_NAME}`, {
     });
 
     socket.on('input', (data) => {
-        let name = data.name;
-        let message = data.message;
+        let { name, message, date } =data;
 
         if (name === '' || message === '') {
             sendStatus('Please enter a name and message')
         } else {
-            chat.insertOne({name, message}, () => {
+            chat.insertOne({name, message, date}, () => {
                 console.log(data);
                 io.emit('output', [data]);
                 sendStatus({

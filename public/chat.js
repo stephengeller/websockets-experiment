@@ -24,18 +24,29 @@ const setStatus = (s) => {
 };
 
 const socket = io.connect();
-
 if (socket) {
     console.log('connected to socket.');
 
     socket.on('output', function(data) {
         if (data.length) {
             for (let x = 0; x < data.length; x++) {
-                const { name, message } = data[x];
+                const { name, message, date } = data[x];
                 const messageDiv = document.createElement('div');
                 messageDiv.setAttribute('class', 'chat-message');
-                messageDiv.innerHTML = `<span id='message-name'><strong>${name}</strong></span>:
-                ${message}`;
+                const currentDate = new Date(date);
+                const datetime = currentDate.getDate() + "/"
+                    + (currentDate.getMonth()+1)  + "/"
+                    + currentDate.getFullYear() + " @ "
+                    + currentDate.getHours() + ":"
+                    + currentDate.getMinutes() + ":"
+                    + currentDate.getSeconds();
+                messageDiv.innerHTML = `
+                    <div class="css-tooltip">
+                        <div class="css-tooltiptext">${datetime}</div>
+                        <span id='message-name'>
+                            <strong>${name}</strong>
+                        </span>: ${message}
+                    </div>`;
                 messages.appendChild(messageDiv);
                 messages.insertBefore(messageDiv, messages.firstChild);
                 if (name === username.value) {
@@ -59,12 +70,13 @@ if (socket) {
         if (e.which === 13 && e.shiftKey === false) {
             socket.emit('input', {
                 name: username.value,
-                message: textarea.value
+                message: textarea.value,
+                date: new Date()
             });
 
             event.preventDefault();
         }
-    })
+    });
 
     clearBtn.addEventListener('click', () => {
         socket.emit('clear');
