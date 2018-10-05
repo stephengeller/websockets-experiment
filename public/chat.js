@@ -31,12 +31,17 @@ if (socket) {
     socket.on('output', function(data) {
         if (data.length) {
             for (let x = 0; x < data.length; x++) {
-                const message = document.createElement('div');
-                message.setAttribute('class', 'chat-message');
-                message.innerHTML = `<strong>${data[x].name}</strong>:
-                ${data[x].message}`;
-                messages.appendChild(message);
-                messages.insertBefore(message, messages.firstChild);
+                const { name, message } = data[x];
+                const messageDiv = document.createElement('div');
+                messageDiv.setAttribute('class', 'chat-message');
+                messageDiv.innerHTML = `<span id='message-name'><strong>${name}</strong></span>:
+                ${message}`;
+                messages.appendChild(messageDiv);
+                messages.insertBefore(messageDiv, messages.firstChild);
+                if (name === username.value) {
+                    document.getElementById('message-name').classList.add('my-message');
+                    messageDiv.style.textAlign='right'
+                }
             }
         }
     });
